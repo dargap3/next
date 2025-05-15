@@ -1,4 +1,4 @@
-# Next.js Notes
+# Next.js 15 Notes
 
 ## 1. General Concepts
 
@@ -73,7 +73,139 @@
 - Lets us logically organize our routes and project files without impacting the URL scructure.
 - Route groups are actually the only way to share a layout between routes without affecting the URL.
 - We should wrap the folder name in parenthesis: (auth.tsx)
+- Apply layouts selectively to specific parts of our app.
 
 ## 4. Layouts
 
-- Next automatically create and set the layout file when we first access the root route, even if the layout file has been deleted.
+- A layout is UI that is shared between multiple pages in the app.
+- Default export a React component from a layout file. That component takes a children prop, which next will populate with your page content.
+- Next automatically create and set the RootLayout file when we first access the root route, even if the layout file has been deleted. It's not an optional file.
+
+### 4.1. Nested Layouts
+
+- We can put layout files in each route that we need.
+
+### 4.2. Multiple Root Layouts
+
+- We achive this using route groups and structuring our page and layouts folders whatever we need.
+
+## 5. Routing Metadata
+
+- The metadata API in next is a powerful feature that lets us define metadata for each page.
+- Metadata ennsures our content looks great when it's shared or indexed by search engines.
+- Two ways to handle metadata in layout or page files:
+  1. Export a static **metadata** object.
+  2. Export a dynamic **generateMetadata** function.
+
+### 5.1. Metadata Rules
+
+- Both layout and pase can export metadata. Layout mmetadata applies to all its pages, while page metadata is specific to that page.
+- Metadata follows a top-down order, starting from the root level.
+- When metadata exists in multiple places along a route, they merge together, with deeper page metadata overriding layout metadata for matching properties.
+- We can't use metadata object and generateMetadata function in the same route segment, it is one or the other.
+- Metadata won't work in pages that are marked with the 'use client' directive.
+
+### 5.2. Title Metadata
+
+- The title field's primary purpose is to define the document title.
+- It can be a string or an object.
+- When we use the template approach we have three options:
+  1. default: acts as a fallback for any child routes that don't specify their own title.
+  2. template: is useful when we want to add consistent prefixes or suffixes to our titles. This property applies to child routes.
+  3. absolute: sometimes we might to break free from the template pattern set by parent segments, absolute overrides the parent segments.
+
+## 6. UI Navigation.
+
+### 6.1. Link component navigation
+
+- The `<Link>` component is a React component that extends the HTML `<a>` element, and it's the primary way to navigate between routes in Next. To use it, we'll need to import it from "next/link"
+- The component has a "replace" prop that overrides the current history entry instead of adding a new one.
+
+### 6.2. Params and searchParams
+
+- params is a promise that resolves to an object containing the dynamic route parameters (like id).
+- searchParams is a promise that resolves to an object containing the query parameters (like filters and sorting).
+- While page has access to both params and searchParams, layout only has access to params.
+
+### 6.3. Navigating programmatically
+
+- One way to achive this is using the useRouter hook imported from "next/navigation" inside a client component.
+- Another way is usinng the redirect function from "next/navigation".
+
+## 7. Templates.
+
+- Templates are similar to layouts in that they are also UI shared between multiple pages in the app.
+- Whenever a user navigates between routes sharinng a template, you get a completely fresh start:
+  - a new template component instance is mounted.
+  - DOM elements are recreated.
+  - state is cleared.
+  - effect are re-synchronized.
+- We can create a template by exporting default React component from a template file.
+- Like layouts, templates need to accept a children prop to render the nested route segments.
+- We can use both layout and template files together, in this case the layout renders first and then its children are replaced by template components output.
+
+## 8. Loading.
+
+- loading file help us to create loading states that users see while waiting for content to load in a specific route segment.
+- The loading states appear instantly when navigating, letting users know that the application is responsive annd actively loading content.
+- Behind the scenes, the loading files automatically wraps the page file and its nested children within a react suspense boudary.
+- Benefits:
+  1. It gives users immediate feedback when they navigate somewhere new.
+     This makes the app feel snappy and responsive, and users know their click actually did something.
+  2. Next keeps shared layouts interactive while new content loads.
+     Users can still use things like navigation menus or sidebars even if the main content isn't ready yet.
+
+## 8. Error handling.
+
+- We use an error file that must be a client component.
+- It automatically wraps route segments and their nested children in a React Error Boundary.
+- We can create customm error UIs for specific segments using the file-system hierarchy.
+- It isolates errors to affected segments while keeping the rest of the app functional.
+- It enables us to attempt to recover from an error without requiring a full page reload.
+
+### 8.1. Error Recovery.
+
+- Take advantange of the reset function prop.
+- The reset function tryes to re-render the component that failed on the client-side.
+- It is better to try to attempt server side recovery.
+
+### 8.2. Errors in Nested routes.
+
+- Errors always bubble up to find the closest parent error boundary.
+- An error file handles errors not just for its own folder, but for all the nested child segments below it too.
+- By strategically placing error files at different levels in the route folders, we can control exactly how detailed your error handling gets.
+- Where we put the error file makes a huge difference - it determines exactly which parts of the UI get affected when things go wrong.
+
+### 8.3. Errors in layouts.
+
+- The error boundary won't catch errors thrownn in layout files within the samme segment because of how the component hierarchy works.
+
+### 8.4. Global errors.
+
+- Next provides a special filel called "global-error" that goes in the root app directory.
+- This is the last line of defennse when something goes catastrophically wrong at the highest level of the app.
+- Global error boundary only works in production mode.
+- global-error file needs to include its own html and body tags because when this error boundary kicks in it completely replaces the root layout.
+
+## 9. Component hierarchy.
+
+1. layout.tsx
+2. template.tsx
+3. error.tsx
+4. loadind.tsx
+5. not-found.tsx
+6. page.tsx
+
+```jsx
+<Layout>
+  <Template>
+    <ErrorBoundary fallback={<Error />}>
+      <Suspense fallback={<Loading />}>
+        <ErrorBoundary fallback={<NotFound />}>
+          <Page />
+        </ErrorBoundary>
+      </Suspense>
+    </ErrorBoundary>
+  </Template>
+</Layout>
+```
