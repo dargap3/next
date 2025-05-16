@@ -2,9 +2,9 @@
 
 ## 1. General Concepts
 
-- Next js is a React framework for buildind full-stack web applications.
+- Next js is a React framework for building full-stack web applications.
 - It uses React for building user interfaces but provides additional features that enable you to build production-ready applications, including routing, optimized rendering, data fetching, bundling, compiling, and more.
-- Opinions and conventions should be followed to implemennt these features.
+- Opinions and conventions should be followed to implement these features.
 
 ## 2. React Server Components
 
@@ -260,3 +260,53 @@
 - (..) to match segments one level above.
 - (..)(..) to match segments two level above.
 - (...) to match segments from the root app directory.
+
+## 12. Route handlers.
+
+- The app router lets us create custom request handlers for our routes using a feature called Route Handlers.
+- Unlike pages routes, which give us HTML content, Route Handlers let us build RESTful endpoints with complete control over the response.
+- Think of it like building a Node + Express app.
+- There is no need to set up and configure a separate server.
+- Route handlers are great when making external API requests as well. For example, if we're building an app that needs to talk third-party services.
+- Route handlers run server-side, our sensitive info like private keys stays secure and never reaches the browser.
+- Route handlers are the equivalent of API routes in Page router.
+- Next supports GET, POST, PUT, PATCH, DELETE, HEAD and OPTIONS.
+- If an unsupported method is called, Next will return a 405 Method Not Allowed response.
+- Just like page routes, route handlers must live inside the app folder.
+- The file must be called `route` and it must export functions named afther HTPP verbs.
+- Watch out for conflicts between page routes and route handlers. In case of conflicts the route handler will take over by default.
+
+### 12.1. Headers in route handlers
+
+- HTTP headers represent the metadata associated with an API request and response.
+- **Request Headers:** These are sent by the client, such as a web browser, to the server. They content essential information about the request, which helps the server understand and process it correctly. Some common request headers are:
+  - **'User-Agent'** which identifies the browser and operating system to the server.
+  - **'Accept'** which indicates the content types like text, video, or image formats that the client can process.
+  - **'Authorization'** header used by the client to authenticate itself to the server.
+- **Response Headers:** These are sent back from the server to the client. They provide information about the server and the data being sent in the response.
+  - **'Content-Type'** header which indicates the media type of the response. It tells the client what the data type of the returned content is, such as text/html for HTML documents, application/json for JSON data, etc.
+
+### 12.2. Cookies in route handlers
+
+- Cookies are small pieces of data that a server sends to a user's web browser.
+- The browser can store the cookies and send them back to the same server with future requests.
+- Cookies serve three main purposes:
+  - managing sessions (like user logins and shopping carts)
+  - handling personalization (such as user preferences and themes)
+  - tracking (like recording and analyzing user behavior)
+
+### 12.3. Caching in route handlers
+
+- Route handlers are not cached by default but we can opt into caching when using the GET method.
+- Caching only works with GET methods.
+- When we use dynamic functions like headers() and cookies() or working with the request object in the GET methot, caching won't be applied.
+- There's no caching during development.
+
+### 12.4. Middleware
+
+- Middleware in Next is a powerful feature that lets us intercept and control the flow of requests and responses throughout our application.
+- It does this at a global level, significantly enhancing features like redirects, URL, rewrites, authentication, headers, cookies, and more.
+- Middleware lets us specify paths where it should be active:
+  - Custom matcher config.
+  - Conditional statements
+- Middleware file must be in the src folder.
