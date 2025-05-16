@@ -1,0 +1,17 @@
+import Link from "next/link";
+
+export default function F1() {
+  return (
+    <>
+      <h1>F1 page</h1>
+      <div>
+        <Link href={"/f1/f2"} className="underline">
+          F2
+        </Link>
+        <Link href={"/f3"} className="underline ml-2.5">
+          F3
+        </Link>
+      </div>
+    </>
+  );
+}

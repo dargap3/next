@@ -4,7 +4,7 @@ import { Footer } from "../_components/footer";
 import { Header } from "../_components/header";
 import { ErrorWrapper } from "./error-wrapper";
 
-// import "./global.css";
+import "./global.css";
 
 export const metadata: Metadata = {
   title: {

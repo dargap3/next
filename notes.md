@@ -209,3 +209,54 @@
   </Template>
 </Layout>
 ```
+
+## 10. Parallel routes.
+
+- Parallel routing is an advanced routing mechanism that lets us render multiple pages simultaneously within the same layout.
+- **How to set them up:**
+  - Parallel routes in Next are definned using a feature known as "slots".
+  - Slots help organize content in a modular way.
+  - To create a slot, we use the `@folder` naming.
+  - Each defined slot automatically becomes a prop in its corresponding `layout` file.
+- **Use cases:**
+  - Dashboards with multiple sections.
+  - Split-view interfaces.
+  - Multi-pane layouts.
+  - Complex admin interfaces.
+  - Any UI where sections need to operate independently.
+- **Benefits:**
+  - Parallel routes are great for splitting a layout into manageable slots (especially when different teams work on different parts)
+  - Independent route handling:
+    - Each slot in the layout, such as users, renenue and notifications, can handle its own loading and error states.
+    - This granular control is particularly useful in scenarios where different sections of the page load at varying speeds or encounter unique errors.
+  - Sub-navigation:
+    - Each slot can essentially function as a mini-application, complete with its own navigation and state management.
+    - Users can interact with each section separately, applying filters, sorting data, or navigating through pages without affectinng other parts.
+  - Children prop is also an slot.
+
+### 10.1. Unmatched Routes
+
+- **Navigation from the UI:** When navigating through the UI (like clicking links), Next keeps showing whatever was in the unmatched slots before.
+- **Page reload:**
+  - Next looks for a "default" file in each unmatched slot.
+  - This file is critical as it serves as a fallback to render conntent when the framework cannot retrieve a slot's active state from the current URL.
+  - Without the file, we'll get a 404 error.
+  - Normally the default file is a duplicate of the page, but it could be whatever we want.
+
+### 10.2. Conditional Routes
+
+- Imagine we want to show different content based on whether a user is logged in or not.
+- We might want to display a dashboard for authenticated users but show a login page for those who aren't.
+- Conditional routes allow us to achieve this while maintaining completely separate code on the same URL.
+
+## 11. Intercepting routes.
+
+- Intercepting routes is an advanced routing mechanism that allows us to load a route from another part of our application within the current layout.
+- It's particularly useful when we want to display new content while keeping the user in the same context.
+
+### 11.1. Intercepting routes conventions.
+
+- (.) to match segments on the same level.
+- (..) to match segments one level above.
+- (..)(..) to match segments two level above.
+- (...) to match segments from the root app directory.
