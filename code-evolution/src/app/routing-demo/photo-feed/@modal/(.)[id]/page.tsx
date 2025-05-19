@@ -1,6 +1,8 @@
 import Image from "next/image";
-import wondersImages, { WonderImage } from "@/app/photo-feed/wonders";
-import Modal from "@/app/_components/modal";
+import wondersImages, {
+  WonderImage,
+} from "@/app/routing-demo/photo-feed/wonders";
+import Modal from "@/components/modal";
 
 export default async function PhotoModal({
   params,

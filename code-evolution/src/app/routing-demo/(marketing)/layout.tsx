@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
-import { Footer } from "../_components/footer";
-import { Header } from "../_components/header";
+import { Footer } from "../../../components/footer";
+import { Header } from "../../../components/header";
 import { ErrorWrapper } from "./error-wrapper";
 
 import "./global.css";
