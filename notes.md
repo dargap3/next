@@ -467,8 +467,97 @@
 
 #### 13.1.5. RSC rendering lyfecycle.
 
+- When we talk about RSC we're dealing with three key players: browser(client), Next(framework) and React(library).
+
+##### 13.1.5.1. RSC loading sequence.
+
+1. The browser request a page.
+2. Next router matches the requested URL to a server component.
+3. Next instructs react to render that server component.
+4. React render the server component and any child components that are also server components, converting them into a special JSON format known as "the RSC payload".
+
+- During this process, if any server component suspends, react pauses renndering of that subtree and sends a placeholder value instead.
+- While all this is happening, React is also preparing instructions for the client components we will need later.
+
+5. Next takes both the RSC payload and the client component instructions to generate HTML on the server.
+6. This HTML streams to the browser right away, giving a quick non-interactive preview of the route.
+
+- At the same time Next also streams the RSC payload as react renders each piece of the UI.
+- Once this reaches the browser, Next processes everything that was streamed over.
+
+7. React uses the RSC payload and client component instructions to progressively render the UI. Once all the client and server components output has been loaded, the final UI state is presented to the user.
+8. Client components undergo hydration, transforming the app from a static display into an interactive experience.
+
+##### 13.1.5.2. RSC updating sequence.
+
+1. The browser request a refetch of a specific UI.
+2. Next processes the request and matches it to the requested server component.
+3. Next instructs react to render the component tree.
+4. React render the components similar to what happened during the initial loading.
+5. We don't generate new HTML for updates.
+6. Next js progressively streams the response data straight back to the client.
+7. Next triggers a re-render of the route using the new content.
+8. React then carefully reconciles or merges the new rendered output with the existing components on the screen.
+9. How we're using special JSON format instead of HTML, React can update everything while keeping important UI states intact.
+
+In Next we have three different ways rendering can happen on the server:
+
 #### 13.1.6. Static rendering.
 
--
+- Static rendering is a server rendering strategy where we generate HTML pages when building our app.
+- Think of it as preparing all the content in advance, before any user visits the site.
+- Once built, these pages can be cached by CDNs annd served instantly to users.
+- With this approach, the same pre-rendered page can be shared among different users, giving the app a significant performance boost.
+- Static rendering is perfect for things like blog posts, e-commerce product listings, documentation and marketing pages.
+- Static rendering is the default strategy in the app router.
+- All routes are automatically prepared at build time without any additional setup.
+- **prod vs dev server:**
+  - **In production**, we create one optimized build and deploy it, no on-the-fly changes after development.
+  - In production, pages are pre-rendered once during the build.
+  - **In development**,on the other hand, focuses on the developer experience.
+  - We need to see our changes immediately in the browser without rebuilding the app every time.
+  - In development, pages are pre-renndered on every request.
+- **Prefetching:**
+  - The initial load includes everything required for client side navigation.
+  - Prefetching is a technique that preloads routes in the background as their links become visible.
+  - For static routes, Next automatically prefetches and caches the whole route.
+  - When our home page loads, Next is already prefecthing all necessary routes for instant navigation.
 
 #### 13.1.7. Dynamic rendering.
+
+- Dynamic rendering is a server rendering strategy where routes are rendered uniquely for each user when they make a request.
+- It is useful when you need to show personalized data or information that's only available at request time (and not ahead of time during prerendering) things like cookies or URL search parameters.
+- News websites, personalized shopping pages, and social media feeds are some examples where dynamic rendering is beneficial.
+- Next automatically switches to dynamic rendering for an entire route when it detects what we call a "dynamic function" or "dynamic API":
+
+  - cookies()
+  - headers()
+  - connection()
+  - draftMode()
+  - searchParams prop
+  - after()
+
+  Using any of these autocatically opts your entire route into dynamic rendering at request time.
+
+- We don't have to stress about choosing between static and dynamic rendering, Next automatically selects the optimal rendering strategy for each route bases on the features and APIs we're using.
+- If we want to force a route to be dynamically rendered, we can use the `export const dynamic = 'force-dynamic'` config at the top of the page.
+
+##### 13.1.7.1 generateStaticParams().
+
+- ```js
+  generateStaticParams;
+  ```
+  Is a function that works alongside dynamic route segments, to generate static routes during build time, instead of on demand at request time, giving us a nice performance boost.
+- This function runs during build time.
+- **dynnamicParams:**
+  - Controls what happens when a dynamic segment is visited that was not generated with generateStaticParams()
+  - <u>true</u>: Next will statically render pages on demand for any dynamic segments not included in `generateStaticParams()`.
+  - <u>false</u>: Next will return 404 error for any dynamic segments not included in our pre-rendered list.
+
+#### 13.1.8. Streming.
+
+- Streaming is a strategy that allows for progressive UI rendering from the server.
+- Work is broken down into smaller chunks and streamed to the client as soon as they're ready.
+- This means users can see parts of the page right away, without waiting for everything to load.
+- It's particularly powerful for improving initial page load times and handling UI elements that depend on slower data fetches, which would normally hold up the entire route.
+- Streaming comes built right into the App router.
