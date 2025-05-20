@@ -561,3 +561,47 @@ In Next we have three different ways rendering can happen on the server:
 - This means users can see parts of the page right away, without waiting for everything to load.
 - It's particularly powerful for improving initial page load times and handling UI elements that depend on slower data fetches, which would normally hold up the entire route.
 - Streaming comes built right into the App router.
+
+## 14. Server and client composition patterns.
+
+- **Server components**:
+
+  - Fetching data
+  - Accessing backend resources directly
+  - Keeping sensitive information (like access tokens and API keys) secure on the server
+  - Handling large dependencies serve-side, which means less JS for the users to download.
+
+- **Client components:**
+  - Adding interactivity
+  - Handling event listeners
+  - Managing state and lifecycle effects (using hooks)
+  - Working with browser-specific APIs.
+  - Implementing custom hooks.
+  - Using React class components
+
+### 14.1. Server component patterns.
+
+#### 14.1.1. Server-only code
+
+- Some code is specifically designed to run exclusively on the server.
+- Think about modules or functions that work with multiple libraries, hadle ennvironment variables, communicate directly with databases, or process sensitive information.
+- Since JS modules can be shared between server and client componennts, code meant for the server could accidentally find its way to client.
+- This is bad news as it can bloat our JS bundle, expose our secret keys, database queries, and sensitive business logic.
+- It's super important to keep server-only code separate from client-side code.
+- **server-only** package, throws a build-time error if someone accidentally imports server code into a client component.
+
+#### 14.1.2. Third-party packages
+
+- Server components have introduced an exciting nnew paradigm in React, and the ecosystem is evolving to keep up.
+- Third-party packages are starting to add the "use client" directive to components that need client-side fetures, making it clear where they should run.
+- Many npm packages haven't made this transition yet.
+- This means while they work fine in Client Components, they might break or fail completely in sever components.
+- We can wrap the third-party components that need client-side features in our own client components.
+
+#### 14.1.3. Context providers
+
+- React context isn't supported in Server Components.
+- If we try to create a context at the app root, we'll run into an error.
+- The solution is to create our context and render its provider inside a dedicated client component.
+
+### 14.2. Client component patterns.
