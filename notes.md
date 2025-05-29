@@ -671,7 +671,7 @@ When fetching data inside components, we need to be aware of two data fetching p
   - A tool that makes it really easy to talk to our database.
   - It's like a translator that helps our code communicate with SQLite.
 
-##### 15.1.4.1. Data mutations.
+### 15.2. Data mutations.
 
 - When we work with data, we're typically performing what we call CRUD operations:
 
@@ -680,58 +680,60 @@ When fetching data inside components, we need to be aware of two data fetching p
   - Update
   - Delete
 
-- **Server Actions:**
+#### 15.2.1. Server Actions:
 
-  - Server actions are asynchronous functions that are executed on the server.
-  - They can be called in Server and Client components to handle form submissions and data mutations in Next apps.
-  - We should use Server Actions when we:
-    - Need to perform secure database operations.
-    - Want to reduce API boilerplate code.
-    - Need progressive engancement for forms.
-    - Want to optimize for performance.
-  - A server action can be defines with the React "use server" directive
-  - We can placen the directive:
-    - At the top of an asynnc funcntion to mark the function as a Server Action, or
-    - At the top of a separate file to mark all exports of that file as Server actions.
-  - **Benefits:**
-    - Simplified code, they dramatically simplify our code as there is no need for separate API routes or client-side state management for form data.
-    - Improved security, they boost security by keeping sensitive operations server-side, away from potential threats.
-    - Better performance, they improve performance because there's less JS running on the client, leading to faster load times and better core web vitals.
-    - Progressive enhancement, forms keep working even if JS is turned off in the browser - making our apps more accesible and resilent.
+- Server actions are asynchronous functions that are executed on the server.
+- They can be called in Server and Client components to handle form submissions and data mutations in Next apps.
+- We should use Server Actions when we:
+  - Need to perform secure database operations.
+  - Want to reduce API boilerplate code.
+  - Need progressive engancement for forms.
+  - Want to optimize for performance.
+- A server action can be defines with the React "use server" directive
+- We can placen the directive:
+  - At the top of an asynnc funcntion to mark the function as a Server Action, or
+  - At the top of a separate file to mark all exports of that file as Server actions.
+- **Benefits:**
 
-- **useFormStatus:**
+  - Simplified code, they dramatically simplify our code as there is no need for separate API routes or client-side state management for form data.
+  - Improved security, they boost security by keeping sensitive operations server-side, away from potential threats.
+  - Better performance, they improve performance because there's less JS running on the client, leading to faster load times and better core web vitals.
+  - Progressive enhancement, forms keep working even if JS is turned off in the browser - making our apps more accesible and resilent.
 
-  - useFormStatus is a React hook that gives us status information about the last form submission.
-  - Return a status object with four key properties:
+#### 15.2.2. useFormStatus:
 
-    ```jsx
-    const status = useFormStatus();
-    ```
+- useFormStatus is a React hook that gives us status information about the last form submission.
+- Return a status object with four key properties:
 
-    - pending: a boolean that indicates if the parent `<form>` is currently submitting.
-    - data: an object containing the form's submission data.
-    - method: a string (either 'get' or 'post') showing the HTTP method being used.
-    - action: a reference to the function that was passed to the parent `<form>`'s action prop.
+  ```jsx
+  const status = useFormStatus();
+  ```
 
-  - The pending state from useFormStatus is specifically for form submissions.
-  - Go with **pending** from useFormStatus when build reusable components that are meant to live inside forms. For example, submit buttons or loading spinnners that we'll want to use across different forms in the app.
+  - pending: a boolean that indicates if the parent `<form>` is currently submitting.
+  - data: an object containing the form's submission data.
+  - method: a string (either 'get' or 'post') showing the HTTP method being used.
+  - action: a reference to the function that was passed to the parent `<form>`'s action prop.
 
-- **useActionState:**
+- The pending state from useFormStatus is specifically for form submissions.
+- Go with **pending** from useFormStatus when build reusable components that are meant to live inside forms. For example, submit buttons or loading spinnners that we'll want to use across different forms in the app.
 
-  - useActionState is a React hook that allows us to update state based on the result of a form action.
-  - It is particularly helpful for handling form validation and error messages.
-  - isPending from useActionState can be used with any action, not just form submissions.
-  - Choose **isPending** from useActionState when need to keep track of server actions that aren't necessarily related to form submissions. It gives us that extra flexibility.
+#### 15.2.3. useActionState:
 
-- **useOptimistic:**
+- useActionState is a React hook that allows us to update state based on the result of a form action.
+- It is particularly helpful for handling form validation and error messages.
+- isPending from useActionState can be used with any action, not just form submissions.
+- Choose **isPending** from useActionState when need to keep track of server actions that aren't necessarily related to form submissions. It gives us that extra flexibility.
 
-  - useOptimistic is a React hook that provides a way to optimistically update the UI while an asynchronous action is underway.
-  - This technique helps make our apps feel more responsive, especially when working with forms.
-  - Instead of making users wait for server responses, we can show them the expected result right away.
+#### 15.2.4. useOptimistic:
 
-- **Form component:**
-  - The Form component is built on top of the HTML form element.
-  - Comes with some powerful features that make it perfect for modern web apps:
-    - It automatically prefetches loading UI.
-    - It handles client-side navigation on form submission.
-    - It provides progressive enhancement out of the box.
+- useOptimistic is a React hook that provides a way to optimistically update the UI while an asynchronous action is underway.
+- This technique helps make our apps feel more responsive, especially when working with forms.
+- Instead of making users wait for server responses, we can show them the expected result right away.
+
+#### 15.2.5. Form component:
+
+- The Form component is built on top of the HTML form element.
+- Comes with some powerful features that make it perfect for modern web apps:
+  - It automatically prefetches loading UI.
+  - It handles client-side navigation on form submission.
+  - It provides progressive enhancement out of the box.
