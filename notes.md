@@ -374,7 +374,7 @@
 
 #### 13.1.3. Suspense SSR architecture.
 
-- Use the <Suspense> component to unlock two major SSR features:
+- Use the `<Suspense>` component to unlock two major SSR features:
 
   ##### 13.1.3.1. HTML streaming on the server.
 
@@ -390,7 +390,7 @@
 
   ##### 13.1.3.2. Selective hydration on the client.
 
-  - By wrapping our required sections in a <Suspense> component, we're not just enabling streaming but also telling React: "it's ok to hydrate other parts of the page before everything's ready". This is what we call "selective hydration" and is a game changer.
+  - By wrapping our required sections in a `<Suspense>` component, we're not just enabling streaming but also telling React: "it's ok to hydrate other parts of the page before everything's ready". This is what we call "selective hydration" and is a game changer.
   - It allows for the hydration of parts of the page as they become available, even before the rest of the HTML and the JS code are fully downloaded.
   - Thanks to selective hydration, a heavy chunk of JS won't hold up the rest of our page from becoming interactive.
   - Selective hydration also solves our third problem: the necessity to "hydrate everthing to interact with anything".
@@ -605,3 +605,133 @@ In Next we have three different ways rendering can happen on the server:
 - The solution is to create our context and render its provider inside a dedicated client component.
 
 ### 14.2. Client component patterns.
+
+- Just like how we need to keep certain operations server-side, it's equally crucial to keep some functionality strictly on the client side.
+- Client-only code works with browser-specific features - think DOM manipulation, window object interactions, or localStorage operations.
+- These features aren't available on the server, so we need to make sure such code runs only on the client side to avoid server-side rendering errors.
+- To prevent unnintended server side usage of client side code, we can use a package called client-only.
+
+#### 14.2.1. Client component placement.
+
+- Since server components can't handle state and interactivity, we need client components to fill this gap.
+- The key recommendation here is to position these client components lower in our component tree.
+
+### 14.3. Inter leaving component patterns.
+
+1. Server component inside another server component.
+2. Client component inside another client component.
+3. Client component inside a server component.
+4. Server component inside a client component. It's not allowed, once we put a server component inside a client component, it becomes a client component. But we can pass them as children props.
+
+## 15. Data fetching and mutations.
+
+It's usually preferable to use server components for data operations because:
+
+- We can directly communicate with our databases and file systems on the server side.
+- We get better performance since we're closer to our data sources.
+- Our client-side bundle stays lean because the heavy lifting happens server-side.
+- Our sensitive operations and API keys remain secure on the server.
+- The recomendation is only use client components for data fetching whenever be absolutely need it, for instance, when we need realtime updates and when the data depends on client side interactions that we can't predict on the server side.
+
+### 15.1. Data fetching with server components.
+
+- The RSC architecture supports async and await keywords in Server Components.
+- This means we can write our data fetching code just like regular JS, using async functions coupled with the await keyword.
+
+#### 15.1.1. Request memoization.
+
+- This means we can fetch data wherever we need it in our component tree without worryng about duplicate network requests.
+- React will only make the actual fetch once and reuse the result for subsequent calls during the same render pass.
+- It's a React feature and thereby included in Next.
+- Let's us write data-fetching code exactly where we need it rather than having centralize fetches and pass data down through props.
+
+#### 15.1.2. Loading and Error states.
+
+- While client components require us to manage these states with separate variables and conditional rendering, server components make this process much cleaner.
+- To implement a loading state, all we need to do is define and export React component in loading file.
+- For handling errors, define and export a React component in error file.
+
+#### 15.1.3. Data fetching patterns.
+
+When fetching data inside components, we need to be aware of two data fetching patterns:
+
+1. **Sequencial:** requests in a component tree are dependent on each other. This can lead to longer loading times.
+
+2. **Parallel:** requests in a route are eagerly initiated and will load data at the same time. This reduces the total time it takes to load data.
+
+#### 15.1.4. Fetching from a database.
+
+- There are two key reasons why fetching data directly from a database is powerful:
+  - server components have direct access to server-side resources, which makes database interactions seamless.
+  - since everythind happens on the server, we don't need API routes or worry about exposing sensitive information to the client.
+- <u>**SQLite**</u>
+  - A simple, file-based database to store information in our project.
+  - It doesn't require a server or a complex setup and it's perfect for learning and prototyping.
+- <u>**Prisma**</u>
+  - A tool that makes it really easy to talk to our database.
+  - It's like a translator that helps our code communicate with SQLite.
+
+##### 15.1.4.1. Data mutations.
+
+- When we work with data, we're typically performing what we call CRUD operations:
+
+  - Create
+  - Read
+  - Update
+  - Delete
+
+- **Server Actions:**
+
+  - Server actions are asynchronous functions that are executed on the server.
+  - They can be called in Server and Client components to handle form submissions and data mutations in Next apps.
+  - We should use Server Actions when we:
+    - Need to perform secure database operations.
+    - Want to reduce API boilerplate code.
+    - Need progressive engancement for forms.
+    - Want to optimize for performance.
+  - A server action can be defines with the React "use server" directive
+  - We can placen the directive:
+    - At the top of an asynnc funcntion to mark the function as a Server Action, or
+    - At the top of a separate file to mark all exports of that file as Server actions.
+  - **Benefits:**
+    - Simplified code, they dramatically simplify our code as there is no need for separate API routes or client-side state management for form data.
+    - Improved security, they boost security by keeping sensitive operations server-side, away from potential threats.
+    - Better performance, they improve performance because there's less JS running on the client, leading to faster load times and better core web vitals.
+    - Progressive enhancement, forms keep working even if JS is turned off in the browser - making our apps more accesible and resilent.
+
+- **useFormStatus:**
+
+  - useFormStatus is a React hook that gives us status information about the last form submission.
+  - Return a status object with four key properties:
+
+    ```jsx
+    const status = useFormStatus();
+    ```
+
+    - pending: a boolean that indicates if the parent `<form>` is currently submitting.
+    - data: an object containing the form's submission data.
+    - method: a string (either 'get' or 'post') showing the HTTP method being used.
+    - action: a reference to the function that was passed to the parent `<form>`'s action prop.
+
+  - The pending state from useFormStatus is specifically for form submissions.
+  - Go with **pending** from useFormStatus when build reusable components that are meant to live inside forms. For example, submit buttons or loading spinnners that we'll want to use across different forms in the app.
+
+- **useActionState:**
+
+  - useActionState is a React hook that allows us to update state based on the result of a form action.
+  - It is particularly helpful for handling form validation and error messages.
+  - isPending from useActionState can be used with any action, not just form submissions.
+  - Choose **isPending** from useActionState when need to keep track of server actions that aren't necessarily related to form submissions. It gives us that extra flexibility.
+
+- **useOptimistic:**
+
+  - useOptimistic is a React hook that provides a way to optimistically update the UI while an asynchronous action is underway.
+  - This technique helps make our apps feel more responsive, especially when working with forms.
+  - Instead of making users wait for server responses, we can show them the expected result right away.
+
+- **Form component:**
+  - The Form component is built on top of the HTML form element.
+  - Comes with some powerful features that make it perfect for modern web apps:
+    - It automatically prefetches loading UI.
+    - It handles client-side navigation on form submission.
+    - It provides progressive enhancement out of the box.
