@@ -737,3 +737,24 @@ When fetching data inside components, we need to be aware of two data fetching p
   - It automatically prefetches loading UI.
   - It handles client-side navigation on form submission.
   - It provides progressive enhancement out of the box.
+
+## 16. Authentication.
+
+- Most apps revolve around users.
+- When building for users, we nee to consider three fundamental concepts:
+  - Identity: verifying who someone is through authentication.
+  - Sessions: keep track of a user's logged-in state across requests.
+  - Access: controls what they can do.
+- In developer terms, we call these authenticaton, session management and authorization.
+- With React SPA we're only dealing with client-side code.
+- With Next, we've got to protect our apps from three different angles: client-side, server-side and API routes.
+- When implementing authentication, we'll tipically want to:
+  - Let users sign up.
+  - Give them a way to sign in.
+  - Enable them to manage their account (password changes, email updates, etc)
+  - Show or hide UI elements based on wheter they're logged in.
+  - Protect certain routes depending on authentication status.
+  - Access session and user data when needed.
+  - Set up role-based access control (admin, editor, viewer, and so on)
+  - Provide a way to sign out.
+- While we can implement a custom auth solution in Next, Next docs recommend to use an authentication library.
