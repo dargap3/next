@@ -1,16 +1,14 @@
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: unknown;
-}) {
+export default async function Home() {
   /* const response = await fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=medellin&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&units=metric`
   );
   const data = await response.json(); */
 
-  const response = await searchParams;
+  const res = await fetch(`http://localhost:3000/api`, { cache: "no-store" });
 
-  console.log(response);
+  // const data = await res.json();
+
+  console.log(res);
 
   return <main className="px-3">Hello</main>;
 }
